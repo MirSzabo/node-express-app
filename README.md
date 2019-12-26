@@ -7,9 +7,10 @@ Technologies used
 - Express3-handlebars
 - Chai
 - Mocha
+- Zombie
 
 Install the dependencies
-$ npm install
+- $ npm install
 
 Run app
-$ npm start
+- $ npm start
