@@ -1,0 +1,1 @@
+export PATH=/usr/local/share/npm/lib/node_modules/grunt-cli/bin:/usr/local/share/npmlib/node_modules/grunt-cli
