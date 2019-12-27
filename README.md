@@ -8,6 +8,7 @@ Technologies used
 - Chai
 - Mocha
 - Zombie
+- Grunt
 
 Install the dependencies
 - $ npm install
