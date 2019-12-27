@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(require("body-parser")());
 
 const fortune = require("./lib/fortune.js"); // /signals that it should not look for the module in the node_modules directory
 
@@ -22,6 +23,13 @@ app.use(function(req, res, next) {
   next();
 });
 
+//weather middleware
+app.use(function(req, res, next) {
+  if (!res.locals.partials) res.locals.partials = {};
+  res.locals.partials.weather = getWeatherData();
+  next();
+});
+
 //routes
 app.get("/", function(req, res) {
   res.render("home");
@@ -34,17 +42,57 @@ app.get("/about", function(req, res) {
   });
 });
 
-app.get('/tours/hood-river', function(req, res){
-	res.render('tours/hood-river');
+app.get("/newsletter", function(req, res) {
+  // we will learn about CSRF later...for now, we just
+  // provide a dummy value
+  res.render("newsletter", { csrf: "CSRF token goes here" });
 });
-app.get('/tours/oregon-coast', function(req, res){
-	res.render('tours/oregon-coast');
-});
-app.get('/tours/request-group-rate', function(req, res){
-	res.render('tours/request-group-rate');
+app.post("/process", function(req, res) {
+  console.log("Form (from querystring): " + req.query.form);
+  console.log("CSRF token (from hidden form field): " + req.body._csrf);
+  console.log("Name (from visible form field): " + req.body.name);
+  console.log("Email (from visible form field): " + req.body.email);
+  res.redirect(303, "/thank-you");
 });
 
+app.get("/tours/hood-river", function(req, res) {
+  res.render("tours/hood-river");
+});
+app.get("/tours/oregon-coast", function(req, res) {
+  res.render("tours/oregon-coast");
+});
+app.get("/tours/request-group-rate", function(req, res) {
+  res.render("tours/request-group-rate");
+});
 
+//weather
+function getWeatherData() {
+  return {
+    locations: [
+      {
+        name: "Portland",
+        forecastUrl: "http://www.wunderground.com/US/OR/Portland.html",
+        iconUrl: "http://icons-ak.wxug.com/i/c/k/cloudy.gif",
+        weather: "Overcast",
+        temp: "54.1 F (12.3 C)"
+      },
+      {
+        name: "Bend",
+        forecastUrl: "http://www.wunderground.com/US/OR/Bend.html",
+        iconUrl: "http://icons-ak.wxug.com/i/c/k/partlycloudy.gif",
+        weather: "Partly Cloudy",
+        temp: "55.0 F (12.8 C)"
+      },
+      {
+        name: "Manzanita",
+        forecastUrl: "http://www.wunderground.com/US/OR/Manzanita.html",
+        iconUrl: "http://icons-ak.wxug.com/i/c/k/rain.gif",
+        weather: "Light Rain",
+        temp: "55.0 F (12.8 C)"
+      }
+    ]
+  };
+}
 
 // custom 404 page
 app.use(function(req, res) {
